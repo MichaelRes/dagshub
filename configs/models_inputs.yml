@@ -1,0 +1,175 @@
+values: !import values.yml
+
+# Evaluate several architectures
+
+four_theta:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.FourTheta
+    seasonality_period: 365
+
+
+exp_smoothing:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.ExponentialSmoothing
+    seasonal_periods: 2
+
+linear_regression:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 230
+    lags_past_covariates: [-100, -100, -100]
+    output_chunk_length: 182
+  features: ['pluie', 'etp', 'pompage']
+
+
+light_gbm:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LightGBMModel
+    lags: 100
+    output_chunk_length: 10
+  features: ['pluie', 'etp', 'pompage']
+
+lstm:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.BlockRNNModel
+    model: 'LSTM'
+    input_chunk_length: 20
+    output_chunk_length: 184
+    n_rnn_layers: 1
+    n_epochs: 10
+    batch_size: 64
+  features: ['pluie', 'etp', 'pompage']
+
+
+# Best Local Models (that gave the results of the slides)
+
+bioule:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 15
+    lags_past_covariates: [-92, -92, -92, -5, -5, -8, -8]
+    output_chunk_length: 182
+  features: ['pluie', 'etp', 'pompage', 'pluie_lag_Y-1', 'etp_lag_Y-1', 'pluie_mensuelle', 'etp_annuelle_ratio']
+
+barthes:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 12
+    lags_past_covariates: [-78, -78, -78, -52, -52, -1, -1, -1]
+    output_chunk_length: 182
+  features: ['pluie', 'etp', 'pompage', 'pluie_lag_Y-1', 'pluie_lag_Y-2', 'pluie_semaine', 'etp_mensuelle', 'etp_annuelle_ratio']
+
+porquier:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 24
+    lags_past_covariates: [-37, -37, -37, -100, -100, -5]
+    output_chunk_length: 182
+  features: ['pluie', 'etp', 'pompage', 'etp_lag_Y-1', 'etp_lag_Y-2', 'etp_annuelle_ratio']
+
+tarsac:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 17
+    lags_past_covariates: [-71, -71, -71, -89, -89, -9]
+    output_chunk_length: 182
+  features: ['pluie', 'etp', 'pompage', 'pluie_lag_Y-2', 'etp_lag_Y-2', 'etp_mensuelle']
+
+verniolles:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 88
+    lags_past_covariates: [ -36, -36, -36, -72, -72, -1, -1, -1, -1, -1 ]
+    output_chunk_length: 182
+  features: [ 'pluie', 'etp', 'pompage', 'pluie_lag_Y-1', 'pluie_lag_Y-2', 'pluie_mensuelle', 'pluie_semaine', 'etp_mensuelle', 'pluie_dec_mars', 'pluie_annuelle_ratio']
+
+felix:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 91
+    lags_past_covariates: [ -36, -36, -36, -58, -2, -2, -2 ]
+    output_chunk_length: 182
+  features: [ 'pluie', 'etp', 'pompage', 'pluie_lag_Y-2', 'pluie_mensuelle', 'etp_mensuelle', 'etp_annuelle_ratio' ]
+
+all_locations:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 31
+    lags_past_covariates: [ -100, -100, -100, -60, -60, -5, -5, -5]
+    output_chunk_length: 182
+  features: [ 'pluie', 'etp', 'pompage', 'etp_lag_Y-1', 'etp_lag_Y-2', 'pluie_semaine', 'etp_mensuelle', 'etp_annuelle_ratio']
+
+# Best global models
+
+global_linear_regression_univariate:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 230
+    output_chunk_length: 182
+  features: []
+
+global_linear_regression_multivariate:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LinearRegressionModel
+    lags: 230
+    lags_past_covariates: 230
+    output_chunk_length: 182
+  features: ['tp', 't2m']
+
+
+# Other models
+
+global_lstm_univariate:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.BlockRNNModel
+    model: 'LSTM'
+    input_chunk_length: 20
+    output_chunk_length: 184
+    n_rnn_layers: 1
+    n_epochs: 10
+    batch_size: 64
+  features: []
+
+global_lstm_multivariate:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.BlockRNNModel
+    model: 'LSTM'
+    input_chunk_length: 20
+    output_chunk_length: 184
+    n_rnn_layers: 1
+    n_epochs: 10
+    batch_size: 64
+  features: ['tp', 't2m']
+
+global_lgbm_univariate:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LightGBMModel
+    lags: 230
+    output_chunk_length: 182
+  features: []
+
+global_lgbm_multivariate:
+  (): src.utils.model_inputs.ModelInputs
+  model:
+    (): darts.models.LightGBMModel
+    lags: 230
+    lags_past_covariates: 230
+    output_chunk_length: 182
+  features: ['tp', 't2m']

@@ -1,0 +1,69 @@
+values: !import values.yml
+models_inputs: !import models_inputs.yml
+logging: !import logging.yml
+locations: ['saint_felix']
+
+
+grid_last_period:
+  (): src.commands.walk_forward_optuna_grid_command.WalkForwardOptunaGridCommand
+  trainer:
+    (): src.trainers.walk_forward_optuna_grid_trainer.WalkForwardOptunaGridSearchTrainer
+    dataloader: cfg://values.local_dataloader
+    locations: cfg://locations
+    backtest_inputs: cfg://values.backtest_inputs
+    start_dates: cfg://values.start_date
+    n_trials: 200
+  result_folder: !path ../results/local
+
+grid_six_periods:
+  (): src.commands.walk_forward_optuna_grid_command.WalkForwardOptunaGridCommand
+  trainer:
+    (): src.trainers.walk_forward_optuna_grid_trainer.WalkForwardOptunaGridSearchTrainer
+    dataloader: cfg://values.local_dataloader
+    locations: cfg://locations
+    backtest_inputs: cfg://values.backtest_inputs
+    start_dates: cfg://values.start_dates
+    n_trials: 200
+  result_folder: !path ../results/local
+
+eval_last_period:
+  (): src.commands.walk_forward_command.WalkForwardCommand
+  evaluator:
+    (): src.evaluators.walk_forward_evaluator.WalkForwardEvaluator
+    model_input: cfg://models_inputs.felix
+    dataloader: cfg://values.local_dataloader
+    backtest_inputs: cfg://values.backtest_inputs
+    locations: cfg://locations
+  result_folder: cfg://values.local_results_path
+  start_dates: cfg://values.start_date
+  save_model: false
+
+eval_six_periods:
+  (): src.commands.walk_forward_command.WalkForwardCommand
+  evaluator:
+    (): src.evaluators.walk_forward_evaluator.WalkForwardEvaluator
+    model_input: cfg://models_inputs.felix
+    dataloader: cfg://values.local_dataloader
+    backtest_inputs: cfg://values.backtest_inputs
+    locations: cfg://locations
+  result_folder: cfg://values.local_results_path
+  start_dates: cfg://values.start_dates
+  save_model: false
+
+best_model_path: ['best_models/saint_felix/gridsearch_output.pkl']
+
+train_local:
+  (): src.commands.train_command.TrainCommand
+  trainer:
+    (): src.trainers.local_trainer.LocalTrainer
+    models_paths: cfg://best_model_path
+    dataloader: cfg://values.local_dataloader
+  result_folder: cfg://values.local_results_path
+  n_predict_points: 100
+
+predict:
+  (): src.commands.predict_command.PredictCommand
+  model_paths: cfg://best_model_path
+  dataloader: cfg://values.local_dataloader
+  result_folder: cfg://values.local_results_path
+  n_predict_points: cfg://values.n_predictions

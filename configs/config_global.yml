@@ -1,0 +1,161 @@
+values: !import values.yml
+models_inputs: !import models_inputs.yml
+logging: !import logging.yml
+
+global_dataloader:
+  (): src.dataloaders.dill_dataloader.GlobalTimeSeriesDillDataloader
+  folder_path: !path ../data/global/
+  filename: all_aquiferes_between_2011-06-01_and_2021-12-01.pkl
+
+global_dataloader_bdlisa9:
+  (): src.dataloaders.dill_dataloader.GlobalTimeSeriesDillDataloader
+  folder_path: !path ../data/global/
+  filename: all_aquiferes_between_2011-06-01_and_2021-12-01_bdlisa_9.pkl
+
+valid_6_dataloader:
+  (): src.dataloaders.dill_dataloader.GlobalTimeSeriesDillDataloader
+  folder_path: !path ../data/global/
+  filename: aquiferes_6_locations_between_2011-06-01_and_2021-12-01.pkl
+
+
+# Commands for linear regression
+
+evaluate_global_univariate:
+  (): src.commands.evaluate_global_command.EvaluateGlobalCommand
+  evaluator:
+    (): src.evaluators.global_evaluator.GlobalEvaluator
+    model_input: cfg://models_inputs.global_linear_regression_univariate
+    dataloader: cfg://global_dataloader
+    valid_6_dataloader: cfg://valid_6_dataloader
+    fixed_partitioning_inputs: cfg://values.fixed_partitioning_inputs
+    test_size: cfg://values.test_size
+    early_stop: false
+  result_folder: !path ../results/global/
+
+evaluate_global_multivariate:
+  (): src.commands.evaluate_global_command.EvaluateGlobalCommand
+  evaluator:
+    (): src.evaluators.global_evaluator.GlobalEvaluator
+    model_input: cfg://models_inputs.global_linear_regression_multivariate
+    dataloader: cfg://global_dataloader
+    valid_6_dataloader: cfg://valid_6_dataloader
+    fixed_partitioning_inputs: cfg://values.fixed_partitioning_inputs
+    test_size: cfg://values.test_size
+    early_stop: false
+  result_folder: cfg://values.global_results_path
+
+train_global_univariate:
+  (): src.commands.train_global_command.TrainGlobalCommand
+  trainer:
+    (): src.trainers.global_trainer.GlobalTrainer
+    model_input: cfg://models_inputs.global_linear_regression_univariate
+    dataloader: cfg://global_dataloader
+  result_folder: cfg://values.global_results_path
+
+train_global_multivariate:
+  (): src.commands.train_global_command.TrainGlobalCommand
+  trainer:
+    (): src.trainers.global_trainer.GlobalTrainer
+    model_input: cfg://models_inputs.global_linear_regression_multivariate
+    dataloader: cfg://global_dataloader
+  result_folder: cfg://values.global_results_path
+
+train_global_multivariate_bdlisa9:
+  (): src.commands.train_global_command.TrainGlobalCommand
+  trainer:
+    (): src.trainers.global_trainer.GlobalTrainer
+    model_input: cfg://models_inputs.global_linear_regression_multivariate
+    dataloader: cfg://global_dataloader_bdlisa9
+  result_folder: cfg://values.global_results_path
+
+predict_global_univariate:
+  (): src.commands.predict_global_command.PredictGlobalCommand
+  model_path: !path ../best_models/global/all_data/model_univariate.pkl
+  dataset_path: !path ../data/raw/dataset.csv
+  input_cleaner:
+    (): src.cleaners.global_input_cleaner.GlobalInputCleaner
+    cov_path: !path ../data/global/global_covariates.pkl
+    long_and_lat_path: !path ../data/global/long_and_lat.pkl
+    min_date: cfg://values.min_date
+    max_date: cfg://values.max_date
+    coordinates:
+      bioule: [ 1.5376902, 44.0897873 ]
+      les_barthes: [1.170013, 44.096339]
+      saint_felix: [1.888, 43.449]
+      saint_porquier: [1.1772799491, 44.0043983459]
+      tarsac: [-0.1167, 43.6667]
+      verniolles: [1.649, 43.081]
+  result_folder: cfg://values.global_results_path
+  n_predict_points: 182
+
+predict_global_multivariate:
+  (): src.commands.predict_global_command.PredictGlobalCommand
+  model_path: !path ../best_models/global/bdlisa9/model_multivariate.pkl
+  dataset_path: !path ../data/raw/dataset.csv
+  input_cleaner:
+    (): src.cleaners.global_input_cleaner.GlobalInputCleaner
+    cov_path: !path ../data/global/global_covariates.pkl
+    long_and_lat_path: !path ../data/global/long_and_lat.pkl
+    min_date: cfg://values.min_date
+    max_date: cfg://values.max_date
+    coordinates:
+      bioule: [ 1.5376902, 44.0897873 ]
+      les_barthes: [1.170013, 44.096339]
+      saint_felix: [1.888, 43.449]
+      saint_porquier: [1.1772799491, 44.0043983459]
+      tarsac: [-0.1167, 43.6667]
+      verniolles: [1.649, 43.081]
+  result_folder: cfg://values.global_results_path
+  n_predict_points: 182
+
+# command for evaluation all models on bdlisa "9.."
+## univariate
+
+evaluate_global_lgbm:
+  (): src.commands.evaluate_global_command.EvaluateGlobalCommand
+  evaluator:
+    (): src.evaluators.global_evaluator.GlobalEvaluator
+    model_input: cfg://models_inputs.global_lgbm_univariate
+    dataloader: cfg://global_dataloader
+    valid_6_dataloader: cfg://valid_6_dataloader
+    fixed_partitioning_inputs: cfg://values.fixed_partitioning_inputs
+    test_size: cfg://values.test_size
+    early_stop: false
+  result_folder: !path ../results/global/
+
+evaluate_global_lstm:
+  (): src.commands.evaluate_global_command.EvaluateGlobalCommand
+  evaluator:
+    (): src.evaluators.global_evaluator.GlobalEvaluator
+    model_input: cfg://models_inputs.global_lstm_univariate
+    dataloader: cfg://global_dataloader
+    valid_6_dataloader: cfg://valid_6_dataloader
+    fixed_partitioning_inputs: cfg://values.fixed_partitioning_inputs
+    test_size: cfg://values.test_size
+    early_stop: false
+  result_folder: !path ../results/global/
+
+## multivariate: bdlisa 9 only
+evaluate_global_lgbm_bdlisa9:
+  (): src.commands.evaluate_global_command.EvaluateGlobalCommand
+  evaluator:
+    (): src.evaluators.global_evaluator.GlobalEvaluator
+    model_input: cfg://models_inputs.global_lgbm_univariate
+    dataloader: cfg://global_dataloader_bdlisa9
+    valid_6_dataloader: cfg://valid_6_dataloader
+    fixed_partitioning_inputs: cfg://values.fixed_partitioning_inputs
+    test_size: cfg://values.test_size
+    early_stop: false
+  result_folder: !path ../results/global/
+
+evaluate_global_lstm_bdlisa9:
+  (): src.commands.evaluate_global_command.EvaluateGlobalCommand
+  evaluator:
+    (): src.evaluators.global_evaluator.GlobalEvaluator
+    model_input: cfg://models_inputs.global_lstm_univariate
+    dataloader: cfg://global_dataloader_bdlisa9
+    valid_6_dataloader: cfg://valid_6_dataloader
+    fixed_partitioning_inputs: cfg://values.fixed_partitioning_inputs
+    test_size: cfg://values.test_size
+    early_stop: false
+  result_folder: !path ../results/global/

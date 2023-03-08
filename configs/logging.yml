@@ -1,0 +1,23 @@
+version: 1
+disable_existing_loggers: false
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: color_string
+    stream: ext://sys.stdout
+    level: ${LOG_LEVEL-INFO}
+  file:
+    class: logging.FileHandler
+    level: DEBUG
+    filename: !path ../logs/forecast.log
+formatters:
+  color_string:
+    (): illuin_logging.formatters.ColorStringFormatter
+root:
+  level: 0
+  handlers:
+    - console
+    - file
+loggers:
+  illuin_mq.connectors:
+    level: WARNING

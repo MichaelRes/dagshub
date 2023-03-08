@@ -1,0 +1,29 @@
+locations : ['bioule', 'saint_felix', 'les_barthes', 'saint_porquier', 'tarsac', 'verniolles']
+min_date: '2005-06-01'
+min_date_10y: '2011-06-01'
+max_date: '2021-12-01'
+global_split_date: '2021-06-01'
+start_date: ['2015-06-01']
+start_dates: ['2015-01-01', '2015-02-01', '2015-03-01', '2015-04-01', '2015-05-01', '2015-06-01']
+dist: 1.8
+plot: True
+n_predictions: 182
+backtest_inputs:
+  (): src.utils.backtest_inputs.BacktestInputs
+  start_date: null
+  forecast_horizon: 182
+  stride: 365
+
+fixed_partitioning_inputs:
+  (): src.utils.backtest_inputs.FixedPartitioningInputs
+  split_date: '2021-06-01'
+  forecast_horizon: 182
+
+local_dataloader:
+  (): src.dataloaders.dill_dataloader.LocalTimeSeriesDillDataloader
+  folder_path: !path ../data/local
+  filename: data_between_2005-06-01_and_2021-12-01.pkl
+
+test_size: 0.2
+local_results_path: !path ../results/local
+global_results_path: !path ../results/global
