@@ -5,7 +5,7 @@ clean_local:
   (): src.commands.clean_command.CleanCommand
   cleaner:
     (): src.cleaners.local_cleaner.LocalCleaner
-    min_date: cfg://values.min_date
+    min_date: cfg://values.min_date_10y
     max_date: cfg://values.max_date
   dataset_path: !path ../data/raw/dataset.csv
   output_folder: !path ../data/local/

@@ -1,6 +1,7 @@
 from darts import TimeSeries
 import os
 import pandas as pd
+import mlflow
 import matplotlib.pyplot as plt
 import numpy as np
 from src.dataloaders.dill_dataloader import LocalTimeSeriesDillDataloader
@@ -85,6 +86,7 @@ class WalkForwardEvaluator:
         :param global_backtest_metrics: array(n_metrics, n_locations)
         """
         print(dict(zip(["MAPE", "sMAPE", "MSE", "MAE", "RMSE"], np.mean(self.result_metrics, axis=0))))
+        mlflow.log_metrics(dict(zip(["MAPE", "sMAPE", "MSE", "MAE", "RMSE"], np.mean(self.result_metrics, axis=0))))
 
     @staticmethod
     def remove_zeros_from_covariates(covs_location: TimeSeries):
@@ -101,6 +103,7 @@ class WalkForwardEvaluator:
                                                          stride=self.backtest_inputs.stride,
                                                          last_points_only=False,
                                                          past_covariates=covs)
+        fig = plt.figure()
         for hist in hist_forecasts:
             hist.plot(label=f'pz_{hist.time_index[0].year}')
         target.plot(label='truth')
@@ -109,6 +112,7 @@ class WalkForwardEvaluator:
         # TODO improve naming
         plt.savefig(os.path.join(output_folder, location, 'historical_forecast_plot.png'),
                     bbox_inches="tight")
+        mlflow.log_figure(fig, "plots/hist_forecast.png")
         plt.clf()
 
     def get_model_json(self):

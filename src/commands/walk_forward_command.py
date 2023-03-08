@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import warnings
 from typing import List
+import mlflow
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 
@@ -33,17 +34,18 @@ class WalkForwardCommand:
         os.makedirs(self.output_folder, exist_ok=True)
 
     def run(self):
-        if len(self.start_dates) == 1:
-            self.run_on_start_date(self.start_dates[0], self.output_folder)
-            self.evaluator.save_metrics(self.output_folder)
+        with mlflow.start_run() as run:
+            if len(self.start_dates) == 1:
+                self.run_on_start_date(self.start_dates[0], self.output_folder)
+                self.evaluator.save_metrics(self.output_folder)
 
-        else:
-            avg_metrics_by_period = np.zeros((len(self.start_dates), len(self.evaluator.metrics)))
-            for idx, start_date in enumerate(self.start_dates):
-                avg_metrics_by_period[idx] = self.run_on_start_date(start_date)
-            self.plot_results(avg_metrics_by_period)
-            self.save_results(avg_metrics_by_period)
-        self.save_model_if_required()
+            else:
+                avg_metrics_by_period = np.zeros((len(self.start_dates), len(self.evaluator.metrics)))
+                for idx, start_date in enumerate(self.start_dates):
+                    avg_metrics_by_period[idx] = self.run_on_start_date(start_date)
+                self.plot_results(avg_metrics_by_period)
+                self.save_results(avg_metrics_by_period)
+            self.save_model_if_required()
 
     def run_on_start_date(self, start_date: str,
                           output_folder: str = None) -> np.array:
