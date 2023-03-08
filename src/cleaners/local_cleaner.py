@@ -27,7 +27,7 @@ class LocalCleaner:
         }
 
     def generate_file_name(self):
-        return f'data_between_{self.min_date}_and_{self.max_date}.pkl'
+        return f'data.pkl'
 
     @staticmethod
     def compact_data_each_location(data: pd.DataFrame) -> Dict[str, pd.DataFrame]:

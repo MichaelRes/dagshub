@@ -9,36 +9,3 @@ clean_local:
     max_date: cfg://values.max_date
   dataset_path: !path ../data/raw/dataset.csv
   output_folder: !path ../data/local/
-
-
-clean_global:
-  (): src.commands.clean_global_command.CleanGlobalCommand
-  cleaner:
-    (): src.cleaners.global_cleaner.GlobalCleaner
-    min_date: cfg://values.min_date_10y
-    max_date: cfg://values.max_date
-  dataset_path: !path ../data/stations_ades_1440_aquiferes.csv
-  targets_and_covs_6_locations_path: !path ../data/local/data_between_2005-06-01_and_2021-12-01.pkl
-  aquiferes_folder_path: !path ../data/piezometry/
-  cov_path: !path ../data/global/global_covariates.pkl
-  long_and_lat_path: !path ../data/global/long_and_lat.pkl
-  output_folder: !path ../data/global
-
-clean_global_filter:
-  (): src.commands.clean_global_command.CleanGlobalCommand
-  cleaner:
-    (): src.cleaners.global_cleaner.GlobalCleaner
-    min_date: cfg://values.min_date_10y
-    max_date: cfg://values.max_date
-  dataset_path: !path ../data/stations_ades_1440_aquiferes.csv
-  targets_and_covs_6_locations_path: null
-  aquiferes_folder_path: !path ../data/piezometry/
-  cov_path: !path ../data/global/global_covariates.pkl
-  long_and_lat_path: !path ../data/global/long_and_lat.pkl
-  output_folder: !path ../data/global
-  filter_bdlisa: '9'
-
-clean_global_covariates:
-  (): src.commands.clean_global_command.CleanGlobalCovariatesCommand
-  cov_folder: !path ../data/raw/covariates/
-  output_folder: !path ../data/global

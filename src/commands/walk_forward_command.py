@@ -27,8 +27,7 @@ class WalkForwardCommand:
     def __post_init__(self):
         os.makedirs(self.result_folder, exist_ok=True)
 
-        self.output_folder = os.path.join(self.result_folder,
-                                          f'eval_{get_random_digits()}')
+        self.output_folder = os.path.join(self.result_folder)
         for location in self.evaluator.locations:
             os.makedirs(os.path.join(self.output_folder, location), exist_ok=True)
         os.makedirs(self.output_folder, exist_ok=True)
