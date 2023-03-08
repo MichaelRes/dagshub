@@ -22,7 +22,7 @@ fixed_partitioning_inputs:
 local_dataloader:
   (): src.dataloaders.dill_dataloader.LocalTimeSeriesDillDataloader
   folder_path: !path ../data/local
-  filename: data_between_2005-06-01_and_2021-12-01.pkl
+  filename: data.pkl
 
 test_size: 0.2
 local_results_path: !path ../results/local
